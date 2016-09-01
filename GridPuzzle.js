@@ -53,6 +53,10 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
   Tobie.GridPuzzle.slide = false;
   Tobie.GridPuzzle.match = false;
   Tobie.GridPuzzle.fit = false;
+  Tobie.GridPuzzle.maxY = -1;
+  Tobie.GridPuzzle.minY = -1;
+  Tobie.GridPuzzle.maxX = -1;
+  Tobie.GridPuzzle.minX = -1;
 
   /* Description: Find out what kind of puzzle is being used and sets the
   *              appropriate boolean to be true.
@@ -60,15 +64,18 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
   * Returns    : -
   */
   Tobie.GridPuzzle.puzzleType = function(type) {
-    if (type === "slide") {
+    if (type == "slide") {
       this.slide = true;
-    } else if (type === "match") {
+    } else if (type == "match") {
       this.match = true;
-    } else if (type === "fit") {
+    } else if (type == "fit") {
       this.fit = true;
     } else {
       this.slide = true;
     }
+    // console.log("slide: " + this.slide);
+    // console.log("match: " + this.match);
+    // console.log("fit  : " + this.fit);
   }
 
   /* Description: Returns the current active piece selected by the player
@@ -107,8 +114,25 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
             this.puzzle_piece_array[puzzleNum][j] = temp;
           }
         }
+
+        if(xpos > this.maxX) {
+          this.maxX = xpos;
+        } else if (xpos < this.minX || this.minX == -1) {
+          this.minX = xpos;
+        }
+
+        if(ypos > this.maxY) {
+          this.maxY = ypos;
+        } else if (ypos < this.minY || this.minY == -1) {
+          this.minY = ypos;
+        }
+
       }
     }
+    console.log("maxX: " + this.maxX);
+    console.log("minX: " + this.minX);
+    console.log("maxY: " + this.maxY);
+    console.log("minY: " + this.minY);
   }
 
   /* Description: Add an event, marked as a puzzle piece, to the puzzle piece
@@ -134,7 +158,7 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
   * Returns    : -
   */
   Tobie.GridPuzzle.cyclePieces = function() {
-    if (this.current_piece === this.puzzle_piece_array.length-2) {
+    if (this.current_piece === this.puzzle_piece_array.length-1) {
       this.current_piece = 1;
     } else {
       this.current_piece++;
@@ -165,12 +189,32 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
     if (direction == 2 || direction == 6) {
       for (var i = 0; i < eventIds.length; i++) {
         var id = eventIds[i];
-        $gameMap.event(id).moveStraight(direction);
+        if (this.match === true) {
+          var xpos = $gameMap.event(id)._x;
+          var ypos = $gameMap.event(id)._y;
+          if (direction == 2) {
+            $gameMap.event(id).setPosition(xpos,ypos+3);
+          } else {
+            $gameMap.event(id).setPosition(xpos+2,ypos);
+          }
+        } else {
+          $gameMap.event(id).moveStraight(direction);
+        }
       }
     } else {
       for (var i = eventIds.length; i > 0; i--) {
         var id = eventIds[i-1];
-        $gameMap.event(id).moveStraight(direction);
+        if (this.match === true) {
+          var xpos = $gameMap.event(id)._x;
+          var ypos = $gameMap.event(id)._y;
+          if (direction == 8) {
+            $gameMap.event(id).setPosition(xpos,ypos-3);
+          } else {
+            $gameMap.event(id).setPosition(xpos-2,ypos);
+          }
+        } else {
+          $gameMap.event(id).moveStraight(direction);
+        }
       }
     }
   }
@@ -304,7 +348,7 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
         var xpos = $gameMap._events[currEvent]._x;
         var ypos = $gameMap._events[currEvent]._y;
         //if the location in that area has regionId tile and matches the puzzle piece id
-        if($gameMap.regionId(xpos, ypos) != i && $gameMap.regionId(xpos, ypos) > 0) {
+        if($gameMap.regionId(xpos, ypos) != i+1 || $gameMap.regionId(xpos, ypos) > 0) {
           return false;
         }
       }
@@ -366,12 +410,13 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
       var alias_Game_Map_setup = Game_Map.prototype.setup;
       Game_Map.prototype.setup = function(mapId) {
         alias_Game_Map_setup.call(this, mapId);
-        var mapNote = $dataMap.note.split();
-        console.log(mapNote);
+        var mapNote = $dataMap.note.split(" ");
+        console.log(mapNote[0]);
         if (mapNote[0] == 'puzzleroom') {
           Tobie.GridPuzzle.activeMapId = mapId;
+          //console.log(mapNote[1]);
           Tobie.GridPuzzle.puzzleType(mapNote[1]);
-          console.log("setup: " + Tobie.GridPuzzle.activeMapId);
+          //console.log("setup: " + Tobie.GridPuzzle.activeMapId);
           Tobie.GridPuzzle.sortEvents();
         }
         //Tobie.GridPuzzle.printArray();
@@ -443,13 +488,11 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
           }
 
           else if(Input.isTriggered('ok')) {
-            console.log("ok");
             Tobie.GridPuzzle.changePiece();
           }
 
         } else if (Tobie.GridPuzzle.activeMapId == mapId) {
           if(Input.isTriggered('ok')) {
-            console.log("ok");
             Tobie.GridPuzzle.changePiece();
           }
         }
