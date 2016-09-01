@@ -181,8 +181,6 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
   * Arguments  : (direction) RPG Maker based variable
   *              [4 = left][6 = right][8 = up][2 = down]
   * Returns    : -
-  * Change that need to be made:
-  *     move piece based on a sectioned off area
   */
   Tobie.GridPuzzle.movePiece = function(direction) {
     var eventIds = this.currentPiece();
@@ -196,6 +194,7 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
             $gameMap.event(id).setPosition(xpos,ypos+3);
           } else {
             $gameMap.event(id).setPosition(xpos+2,ypos);
+            //console.log(xpos);
           }
         } else {
           $gameMap.event(id).moveStraight(direction);
@@ -236,17 +235,33 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
       var ypos = $gameMap._events[eventIds[i]]._y;
 
       //LEFT
-      if (direction == 4 && !this.emptySpot(xpos-1, ypos)) {
-        return false;
+      if (direction == 4) {
+        if(this.match == true && !this.emptySpot(xpos-2, ypos)) {
+          return false;
+        } else if (!this.emptySpot(xpos-1, ypos)){
+          return false;
+        }
         //RIGHT
-      } else if (direction == 6 && !this.emptySpot(xpos+1, ypos)) {
-        return false;
+      } else if (direction == 6) {
+        if(this.match == true && !this.emptySpot(xpos+2, ypos)) {
+          return false;
+        } else if (!this.emptySpot(xpos+1, ypos)){
+          return false;
+        }
         //UP
-      } else if (direction == 8 && !this.emptySpot(xpos, ypos-1)) {
-        return false;
+      } else if (direction == 8) {
+        if(this.match == true && !this.emptySpot(xpos, ypos-3)) {
+          return false;
+        } else if (!this.emptySpot(xpos, ypos-1)){
+          return false;
+        }
         //DOWN
-      } else if (direction == 2 && !this.emptySpot(xpos, ypos+1)) {
-        return false;
+      } else if (direction == 2) {
+        if(this.match == true && !this.emptySpot(xpos, ypos+3)) {
+          return false;
+        } else if (!this.emptySpot(xpos, ypos+1)){
+          return false;
+        }
       }
     }
     return true;
@@ -342,13 +357,13 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
   *              (True)  Player has solved the puzzle.
   */
   Tobie.GridPuzzle.matchWin = function() { //not tested
-    for(var i = 0; i < this.puzzle_piece_array.length; i++) {
+    for(var i = 1; i < this.puzzle_piece_array.length; i++) {
       for(var j = 0; j < this.puzzle_piece_array[i].length; j++) {
         var currEvent = this.puzzle_piece_array[i][j];
         var xpos = $gameMap._events[currEvent]._x;
         var ypos = $gameMap._events[currEvent]._y;
-        //if the location in that area has regionId tile and matches the puzzle piece id
-        if($gameMap.regionId(xpos, ypos) != i+1 || $gameMap.regionId(xpos, ypos) > 0) {
+        //console.log("i+1: " + Number(i) + " regionId: " + $gameMap.regionId(xpos, ypos));
+        if($gameMap.regionId(xpos, ypos) != i /*&& $gameMap.regionId(xpos, ypos) > 0*/) {
           return false;
         }
       }
@@ -476,9 +491,13 @@ Tobie.GridPuzzle = Tobie.GridPuzzle || {};
 
           } else if(Input.isTriggered('up') && Tobie.GridPuzzle.canMove(8)) {
             Tobie.GridPuzzle.movePiece(8);
+            if (Tobie.GridPuzzle.winCondition()) {
+              Tobie.GridPuzzle.hasWon = true;
+            }
 
           } else if(Input.isTriggered('down') && Tobie.GridPuzzle.canMove(2)) {
             Tobie.GridPuzzle.movePiece(2);
+
             if (Tobie.GridPuzzle.winCondition()) {
               Tobie.GridPuzzle.hasWon = true;
             }
