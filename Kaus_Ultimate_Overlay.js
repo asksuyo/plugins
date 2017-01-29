@@ -21,25 +21,25 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  * Default: false
  * @default false
  * @param Parallax Filename
- * @desc filename used for displaying Parallax Images  
+ * @desc filename used for displaying Parallax Images
  * Default: par
  * @default par
  * @param Ground Filename
- * @desc filename used for displaying Ground Images 
+ * @desc filename used for displaying Ground Images
  * Default: ground
  * @default ground
  * @param Light Filename
- * @desc filename used for displaying Light Images 
+ * @desc filename used for displaying Light Images
  * Default: light
  * @default light
  * @param Shadow Filename
- * @desc filename used for displaying Shadow Images 
+ * @desc filename used for displaying Shadow Images
  * Default: shadow
  * @default shadow
  * @param -S E T T I N G S-
  * @default
  * @param Light Opacity
- * @desc Opacity that Light Images use.  
+ * @desc Opacity that Light Images use.
  * Default:185
  * @default 185
  * @param Quick Start
@@ -82,9 +82,9 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  * Introduction
  * ============================================================================
  *
- * This plugin lets you add overlay images on your map. 
+ * This plugin lets you add overlay images on your map.
  * You have a choice of 5 different layers on the map to put your custom images
- * 
+ *
  * ============================================================================
  * Filename and Use Instructions
  * ============================================================================
@@ -107,9 +107,9 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  * ============================================================================
  * Notetags Instructions
  * ============================================================================
- * Note: Input your notetags inside the map properties. The following notetags 
+ * Note: Input your notetags inside the map properties. The following notetags
  *       is case sensitive and space sensitive.
- * 
+ *
  *  <all>               display all 3 overlays (ground,par,light)
  *  <ground>            display ground layer.
  *  <par>               display parallax layer.
@@ -126,12 +126,12 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  * You can use Variables to fill in your notetags instead of fix value.
  * To do this simply put a '$' at the start of the value followed by the variable's id.
  * Example:
- * <fogName:$1>         This will display the fog of the value of the variable 1. 
+ * <fogName:$1>         This will display the fog of the value of the variable 1.
  * <fogOpacity:$2>      This will set the opacity of the fog to the value of variable 2.
  * <xMove:$3>           This will set the x Movement of the fog to the value of variable 3.
  * <yMove:$4>           This will set the y Movement of the fog to the value of variable 4.
  * <fogBlend:$5>        This will set the Blend Mode of the fog to the value of variable 5.
- * 
+ *
  * You can use this script command to set a variable into text:
  * $gameVariables.setValue(id,"your_text")
  * so you can have a text value instead of a number.
@@ -140,7 +140,7 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  * Light Layer    is the highest layer and used for creating Light Effects such as Sunlight Rays, or Street Lights, etc.
  * Fog Layer      is used for creating a Fog Effect in much that is moving automatically by settings. Used for Mists Clouds etc.
  * Shadow Layer   is used for creating shadow effects.
- * Parallax Layer is used for adding an image in the map that will be OVER the character. 
+ * Parallax Layer is used for adding an image in the map that will be OVER the character.
  * Ground Layer   like Parallax Layer it is used for creating custom images but UNDER your characters.
  *
  *
@@ -162,10 +162,10 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  * fog = for fog layer
  *
  * Calling a new fog has its own arguments: (blendmode and duration is optional and doesnt need to have a value)
- * 
+ *
  * Arguments:  Overlay fog filename opacity xMove yMove blendmode duration
  * Examples:
- *             Overlay fog mist2 155 1 -0.5   //Displays 'mist2' fog in 155 Opacity that moves position x to 1 and y to -0.5 every frame. 
+ *             Overlay fog mist2 155 1 -0.5   //Displays 'mist2' fog in 155 Opacity that moves position x to 1 and y to -0.5 every frame.
  *             Overlay fog shade 130 0 0 1 60 //Displays 'shade' fog in 130 Opacity, additive blend, doesnt move, fades in w/in 60 frames.
  *
  * 1.07 New Feature: Fog Fade Out
@@ -178,13 +178,13 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  **** addfog Function
  * Function: Adds more fog in the map. (If argument is optional you dont need to include it to set the default)
  * Arguments: Overlay addfog filename ID Opacity xMove yMove BlendType(Optional Default=0) Depth(Optional, Default=22)
- * Examples:  
+ * Examples:
  *            Overlay addfog mist1 0 155 0 1 1       //Adds 'mist1' fog with ID set to 0 and Opacity 155 w/ Additive Blend
  *            Overlay addfog shade 3 125 1 1         //Adds 'shade' fog with ID set to 3 and Opacity 125 in Normal Blend.
  *            Overlay addfog water 2 255 -0.1 0 0 0  //Adds 'water' fog with ID set to 2 and Opacity 255 display under all overlays (0 Depth)
  *
  * 1.09 Depth Properties:
- * Depth Layer 
+ * Depth Layer
  * -1  - Default Parallax
  *  0  - Tilemap
  *  1  - Ground Layer
@@ -196,21 +196,21 @@ Imported.Kaus_Ultimate_Overlay = 1.11;
  **** removefog Function
  * Function: Remove a specific Fog by ID
  * Arguments: Overlay removefog ID
- * Examples:  
+ * Examples:
  *            Overlay removefog 3    //Removes the fog that have an ID set to 3.
  *
  * NOTE: -Changing Layer Images DOESN'T REQUIRE notetags in the map to display BUT REQUIRES switches.
- *       -DO NOT USE Overlay fadeout if you have map notetags exist in a map as it will not work and map notetags will persist 
- *        to display its function. USE fog switches to turn off the display of the fog completely. 
+ *       -DO NOT USE Overlay fadeout if you have map notetags exist in a map as it will not work and map notetags will persist
+ *        to display its function. USE fog switches to turn off the display of the fog completely.
  *       -BECAREFUL on displaying too large layers as it will affect the game's performance badly. I suggest keeping it small and simple.
  */
 
 (function() {
-    
+
 function boolFunc(str) {
     return Function("return " + str + " === true")();
-  } 
-    
+  }
+
 var parameters = PluginManager.parameters('Kaus_Ultimate_Overlay');
 var parallax_FN = String(parameters['Parallax Filename']);
 var ground_FN = String(parameters['Ground Filename']);
@@ -257,8 +257,8 @@ var mFogRemoveCall = false;
 var mFogZ = 22;
 var defOpacity = 0;
 
-    
-    
+
+
 //Initializing Automatic Switch on New Game.
 var Kaus_setupNewGame = DataManager.setupNewGame;
         DataManager.setupNewGame = function() {
@@ -270,7 +270,7 @@ var Kaus_setupNewGame = DataManager.setupNewGame;
         $gameSwitches.setValue(shadowSwitch,true);
     }
 };
-    
+
 
 Spriteset_Map.prototype.createLowerLayer = function() {
     Spriteset_Base.prototype.createLowerLayer.call(this);
@@ -318,14 +318,14 @@ Spriteset_Map.prototype.createLowerLayer = function() {
     this.createFogMap();
     this.createLightMap();
     this.createShadow();
-    if(useBindPictures==true) this.createPicturesLayer('below_weather', this._tilemap, 8); 
+    if(useBindPictures==true) this.createPicturesLayer('below_weather', this._tilemap, 8);
     this.createWeather();
     if(useBindPictures==true) this.createPicturesLayer('top', this);
-    if(useTerrax==true) this.createLightmask();   
+    if(useTerrax==true) this.createLightmask();
     this.createDestination();
 };
-  
-    
+
+
 Spriteset_Map.prototype.update = function() {
     Spriteset_Base.prototype.update.call(this);
     this.updateTileset();
@@ -344,14 +344,14 @@ Spriteset_Map.prototype.update = function() {
        };
     };
     if(useBindPictures==true) this.updatePictures();
-    if(mFogCall){ 
+    if(mFogCall){
         this.createMultiFog(Number(mFogID),mFogName,mFogxMove,mFogyMove,mFogOpacity,mFogBlend,mFogZ);
     }
     if(mFogRemoveCall){
         this.removeMultiFog(Number(mFogID));
     }
-};  
-//===================M U L T I F O G  S E T U P=====================    
+};
+//===================M U L T I F O G  S E T U P=====================
 Spriteset_Map.prototype.createMultiFog = function(id,filename,xMove,yMove,opacity,blend,zproperty){
     if(typeof this._multifog[id] == 'undefined'){
     this._xMove[id] = Number(xMove);
@@ -369,7 +369,7 @@ Spriteset_Map.prototype.createMultiFog = function(id,filename,xMove,yMove,opacit
     }
     mFogCall = false;
 };
-    
+
 Spriteset_Map.prototype.updateMultiFog = function(id) {
     this._multinewX[id] += Number(this._xMove[id]);
     this._multinewY[id] += Number(this._yMove[id]);
@@ -378,7 +378,7 @@ Spriteset_Map.prototype.updateMultiFog = function(id) {
     if(this._multinewY[id]!=0) this._multifog[id].origin.y =  ($gameMap.displayY() * $gameMap.tileHeight()) - this._multinewY[id];
                           else this._multifog[id].origin.y =  ($gameMap.displayY() * $gameMap.tileHeight());
 };
-    
+
 Spriteset_Map.prototype.removeMultiFog = function(id){
     this._tilemap.removeChild(this._multifog[id]);
     this._multifog[id] = undefined;
@@ -387,10 +387,10 @@ Spriteset_Map.prototype.removeMultiFog = function(id){
     this._multinewX[id] = 0;
     this._multinewY[id] = 0;
     mFogRemoveCall = false;
-};    
+};
 
-    
-//==================== G R O U N D  M A P ======================    
+
+//==================== G R O U N D  M A P ======================
 Spriteset_Map.prototype.createGroundMap = function() {
     this._groundMap = new Sprite();
     if(map.meta.ground || map.meta.all){
@@ -401,7 +401,7 @@ Spriteset_Map.prototype.createGroundMap = function() {
     this._groundMap.z = 1;
     this._tilemap.addChild(this._groundMap);
     };
-    
+
 Spriteset_Map.prototype.updateGroundMap = function() {
         this._groundMap.x =  $gameMap.displayX() * -$gameMap.tileWidth();
         this._groundMap.y =  $gameMap.displayY() * -$gameMap.tileHeight();
@@ -412,8 +412,8 @@ Spriteset_Map.prototype.updateGroundMap = function() {
        }
     };
 
-        
-//======================= P A R  M A P =========================    
+
+//======================= P A R  M A P =========================
 Spriteset_Map.prototype.createParMap = function() {
     this._parMap = new Sprite();
     if(map.meta.par || map.meta.all){
@@ -423,7 +423,7 @@ Spriteset_Map.prototype.createParMap = function() {
     this._parMap.move(0, 0, Graphics.width, Graphics.height);
     this._parMap.z = 20
     this._tilemap.addChild(this._parMap);
-    if($gameSwitches.value(parSwitch)== true) 
+    if($gameSwitches.value(parSwitch)== true)
       this._parMap.opacity = 255;
      else
       this._parMap.opacity = 0;
@@ -437,16 +437,16 @@ Spriteset_Map.prototype.updateParMap = function() {
         if(this._parMap.opacity < 255) this._parMap.opacity += 10; }
      else
         if(this._parMap.opacity!=0) this._parMap.opacity -= 10;
-    
+
     //Plugin Command Update
      if(parcall){
         if(useFolder) this._parMap.bitmap = ImageManager.loadBitmap('img/overlays/pars/',parName);
         else this._parMap.bitmap = ImageManager.loadParallax(parName);
     };
  };
-    
-        
-//======================= S H A D O W  M A P =========================    
+
+
+//======================= S H A D O W  M A P =========================
 Spriteset_Map.prototype.createShadowMap = function() {
     this._shadowMap = new Sprite();
      if(map.meta.shadow || map.meta.all){
@@ -456,7 +456,7 @@ Spriteset_Map.prototype.createShadowMap = function() {
     this._shadowMap.move(0, 0, Graphics.width, Graphics.height);
     this._shadowMap.z = 21
     this._tilemap.addChild(this._shadowMap);
-    if($gameSwitches.value(shadowSwitch)== true) 
+    if($gameSwitches.value(shadowSwitch)== true)
       this._shadowMap.opacity = 255;
      else
       this._shadowMap.opacity = 0;
@@ -470,14 +470,14 @@ Spriteset_Map.prototype.updateShadowMap = function() {
         if(this._shadowMap.opacity < 255) this._shadowMap.opacity += 10; }
      else
         if(this._shadowMap.opacity!=0) this._shadowMap.opacity -= 10;
-    
+
     //Plugin Command Update
      if(shadowcall){
         if(useFolder) this._shadowMap.bitmap = ImageManager.loadBitmap('img/overlays/shadows/',shadowName);
          else this._shadowMap.bitmap = ImageManager.loadParallax(shadowName);
      };
 };
-    
+
 //===================== L I G H T  M A P =======================
 Spriteset_Map.prototype.createLightMap = function() {
     map = $dataMap;
@@ -490,7 +490,7 @@ Spriteset_Map.prototype.createLightMap = function() {
     this._lightMap.blendMode = 1;
     this._lightMap.z = 23;
     this._tilemap.addChild(this._lightMap);
-    if($gameSwitches.value(lightSwitch)== true) 
+    if($gameSwitches.value(lightSwitch)== true)
       this._lightMap.opacity = light_OP;
      else
       this._lightMap.opacity = 0;
@@ -504,14 +504,14 @@ Spriteset_Map.prototype.updateLightMap = function() {
         if(this._lightMap.opacity < light_OP) this._lightMap.opacity += 1; }
      else
         if(this._lightMap.opacity!=0) this._lightMap.opacity -= 1;
-    
+
     //Plugin Command Update
      if(lightcall){
         if(useFolder) this._lightMap.bitmap = ImageManager.loadBitmap('img/overlays/lights/',lightName);
          else this._lightMap.bitmap = ImageManager.loadParallax(lightName);
          };
 };
-    
+
 //======================= F O G  M A P ==========================
 Spriteset_Map.prototype.createFogMap = function() {
     map = $dataMap;
@@ -562,7 +562,7 @@ Spriteset_Map.prototype.updateFogMap = function() {
          else this._fogMap.origin.x =  ($gameMap.displayX() * $gameMap.tileWidth());
         if(newY!=0) this._fogMap.origin.y =  ($gameMap.displayY() * $gameMap.tileHeight()) - newY;
          else this._fogMap.origin.y =  ($gameMap.displayY() * $gameMap.tileHeight());
-    //Switch Checking 
+    //Switch Checking
      if($gameSwitches.value(fogSwitch)== true){
          if(overlayOpacity!=0){ //if plugin call opacity exist
           defOpacity = Number(overlayOpacity); }
@@ -572,7 +572,7 @@ Spriteset_Map.prototype.updateFogMap = function() {
              fogDuration = overlayDuration; }
           else{ //if not
               fogDuration = Number(map.meta.fogDuration) || 1 ;  }
-         fogTransition = defOpacity / fogDuration; 
+         fogTransition = defOpacity / fogDuration;
      }
     else if(this._fogMap.opacity!=0) this._fogMap.opacity -= 10;
     // Transition Effect
@@ -585,7 +585,7 @@ Spriteset_Map.prototype.updateFogMap = function() {
                }
          }
     else if(this._fogMap.opacity < defOpacity){ //Fade In
-             this._fogMap.opacity += fogTransition; 
+             this._fogMap.opacity += fogTransition;
          }
     //Plugin Command Update
      if(overlayType=="fog"){
@@ -593,7 +593,7 @@ Spriteset_Map.prototype.updateFogMap = function() {
          else this._fogMap.bitmap = ImageManager.loadParallax(overlayName);
      };
 };
-    
+
 //====================P L U G I N   C O M M A N D==================
     var _GameInterpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
     Game_Interpreter.prototype.pluginCommand = function (command, args) {
@@ -670,6 +670,6 @@ Spriteset_Map.prototype.updateFogMap = function() {
 //BUSH REGION CHECK
 Game_Map.prototype.isBush = function(x, y) {
     return (this.isValid(x, y) && this.checkLayeredTilesFlags(x, y, 0x40)) || (this.isValid(x, y) && this.regionId(x, y) == bushRegion);
-};    
-    
+};
+
 })();
